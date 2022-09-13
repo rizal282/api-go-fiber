@@ -5,7 +5,8 @@ import (
 	"os"
 
 	"github.com/rizal282/go-fiber-api/models"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/mysql"
+	// "gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -17,7 +18,18 @@ type DbInstance struct {
 var Database DbInstance
 
 func ConnectDb() {
-	db, err := gorm.Open(sqlite.Open("api.db"), &gorm.Config{})
+
+	// DSN: "iniusername:inipassword@tcp(127.0.0.1:3306)/db_golang?charset=utf8&parseTime=True&loc=Local",
+
+	// db, err := gorm.Open(sqlite.Open("api.db"), &gorm.Config{})
+
+	// config for connect to mysql database
+
+	db, err := gorm.Open(mysql.New(mysql.Config{
+		DSN: "root@tcp(127.0.0.1:3306)/db_golang?charset=utf8&parseTime=True&loc=Local",
+	}), &gorm.Config{})
+
+	
 
 	if err != nil {
 		log.Fatal("Failed to connect to the Database! \n", err.Error())
