@@ -23,6 +23,11 @@ func ConnectDb() {
 
 	// db, err := gorm.Open(sqlite.Open("api.db"), &gorm.Config{})
 
+	// db, err := gorm.Open(postgres.New(postgres.Config{
+	// 	DSN: "user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai",
+	// 	PreferSimpleProtocol: true, // disables implicit prepared statement usage
+	//   }), &gorm.Config{})
+
 	// config for connect to mysql database
 
 	db, err := gorm.Open(mysql.New(mysql.Config{
