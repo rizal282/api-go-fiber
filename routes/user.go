@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/rizal282/go-fiber-api/database"
+	"github.com/rizal282/go-fiber-api/helpers"
 	"github.com/rizal282/go-fiber-api/models"
 )
 
@@ -25,6 +26,39 @@ func CreateUser(c *fiber.Ctx) error {
 	}
 
 	database.Database.Db.Create(&user)
+	responseUser := CreateResponseUser(user)
+
+	return c.Status(200).JSON(responseUser)
+}
+
+func GetUsers(c *fiber.Ctx) error {
+	users := [] models.User {}
+
+	database.Database.Db.Find(&users)
+
+	responseUsers := [] User {}
+
+	for _, user := range users {
+		responseUser := CreateResponseUser(user)
+		responseUsers = append(responseUsers, responseUser)
+	}
+
+	return c.Status(200).JSON(responseUsers)
+}
+
+func GetUserById(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+
+	var user models.User
+
+	if err != nil {
+		return c.Status(400).JSON("id bukan tipe integer")
+	}
+
+	if err := helpers.FindUser(id, &user); err != nil {
+		return c.Status(400).JSON(err.Error())
+	}
+
 	responseUser := CreateResponseUser(user)
 
 	return c.Status(200).JSON(responseUser)

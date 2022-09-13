@@ -18,6 +18,8 @@ func setupRoute(app *fiber.App) {
 
 	// create user route
 	app.Post("/api/users", routes.CreateUser)
+	app.Get("/api/users", routes.GetUsers)
+	app.Get("/api/users/:id", routes.GetUserById)
 }
 
 func main() {
