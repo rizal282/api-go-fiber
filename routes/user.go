@@ -32,11 +32,11 @@ func CreateUser(c *fiber.Ctx) error {
 }
 
 func GetUsers(c *fiber.Ctx) error {
-	users := [] models.User {}
+	users := []models.User{}
 
 	database.Database.Db.Find(&users)
 
-	responseUsers := [] User {}
+	responseUsers := []User{}
 
 	for _, user := range users {
 		responseUser := CreateResponseUser(user)
@@ -62,4 +62,57 @@ func GetUserById(c *fiber.Ctx) error {
 	responseUser := CreateResponseUser(user)
 
 	return c.Status(200).JSON(responseUser)
+}
+
+func UpdateUser(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+
+	var user models.User
+
+	if err != nil {
+		return c.Status(400).JSON("id bukan tipe integer")
+	}
+
+	if err := helpers.FindUser(id, &user); err != nil {
+		return c.Status(400).JSON(err.Error())
+	}
+
+	type UpdateUser struct {
+		FirstName string `json:"first_name"`
+		LastName  string `json:"last_name"`
+	}
+
+	var updateData UpdateUser
+
+	if err := c.BodyParser(&updateData); err != nil {
+		return c.Status(500).JSON(err.Error())
+	}
+
+	user.FirstName = updateData.FirstName
+	user.LastName = updateData.LastName
+
+	database.Database.Db.Save(&user)
+	
+	responseUser := CreateResponseUser(user)
+	return c.Status(200).JSON(responseUser)
+}
+
+func DeleteUser(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+
+	var user models.User
+
+	if err != nil {
+		return c.Status(400).JSON("id bukan tipe integer")
+	}
+
+	if err := helpers.FindUser(id, &user); err != nil {
+		return c.Status(400).JSON(err.Error())
+	}
+
+	if err := database.Database.Db.Delete(&user).Error; err != nil {
+		return c.Status(404).JSON(err.Error())
+	}
+
+	return c.Status(200).JSON("Successfully deleted")
 }
